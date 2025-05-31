@@ -33,35 +33,39 @@ def send_push(message):
 
 def login_and_get_cookies():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")  # Disable headless for testing
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://employeestore.gucci.com/ae/en_gb/")
-
+    print("Opened Gucci store login page.")
     time.sleep(3)
 
     try:
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
         ).click()
+        print("Clicked login button.")
 
         time.sleep(2)
         driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
         driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
+        print("Entered login credentials.")
+
         driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
+        print("Submitted login form.")
         time.sleep(5)
 
     except TimeoutException:
         print("Login form not found — maybe already logged in.")
 
     cookies = driver.get_cookies()
+    print("Retrieved cookies.")
     driver.quit()
 
     cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
     return cookie_str
-
 def fetch_products(cookie_header):
     headers = {
         "Cookie": cookie_header,
