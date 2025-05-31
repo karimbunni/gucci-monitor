@@ -53,7 +53,11 @@ try:
     driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
     driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
     time.sleep(5)
+    cookies = driver.get_cookies()
+    driver.quit()
 
+    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
+    return cookie_str
 except TimeoutException:
     print("Login form not found — maybe already logged in.")
 
