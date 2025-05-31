@@ -44,7 +44,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 WebDriverWait(driver, 10).until(
     EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
-).click()
+    ).click()
     time.sleep(2)
     driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
     driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
