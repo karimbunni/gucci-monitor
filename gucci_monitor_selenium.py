@@ -56,7 +56,8 @@ try:
 
     cookies = driver.get_cookies()
     driver.quit()
-
+    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
+return cookie_str
     cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
     return cookie_str
 
