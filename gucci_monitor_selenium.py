@@ -41,7 +41,7 @@ def login_and_get_cookies():
 
     time.sleep(3)
 
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 30).until(
         EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
     ).click()
 
