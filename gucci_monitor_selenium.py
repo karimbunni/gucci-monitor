@@ -33,13 +33,9 @@ def send_push(message):
 
 def login_and_get_cookies():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Re-enable later after testing
+    chrome_options.add_argument("--headless")  # Enable headless for Render
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-
-    # Create a unique Chrome profile dir to avoid conflicts
-    unique_user_dir = f"/tmp/chrome_{os.getpid()}"
-    chrome_options.add_argument(f"--user-data-dir={unique_user_dir}")
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://employeestore.gucci.com/ae/en_gb/")
