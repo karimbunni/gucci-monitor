@@ -41,7 +41,10 @@ def login_and_get_cookies():
 
     time.sleep(3)
 
-    WebDriverWait(driver, 30).until(
+    from selenium.common.exceptions import TimeoutException  # Make sure this import is at the top
+
+try:
+    WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
     ).click()
 
@@ -50,6 +53,9 @@ def login_and_get_cookies():
     driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
     driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
     time.sleep(5)
+
+except TimeoutException:
+    print("Login form not found — maybe already logged in.")
 
     cookies = driver.get_cookies()
     driver.quit()
