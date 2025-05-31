@@ -1,4 +1,3 @@
-
 import os
 import time
 import requests
@@ -7,6 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # Load credentials from environment variables
 load_dotenv()
@@ -39,12 +40,11 @@ def login_and_get_cookies():
     driver.get("https://employeestore.gucci.com/ae/en_gb/")
 
     time.sleep(3)
-    from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
     WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
+        EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
     ).click()
+
     time.sleep(2)
     driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
     driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
