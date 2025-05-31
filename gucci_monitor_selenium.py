@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # Load credentials from environment variables
 load_dotenv()
@@ -41,30 +42,19 @@ def login_and_get_cookies():
 
     time.sleep(3)
 
-    from selenium.common.exceptions import TimeoutException  # Make sure this import is at the top
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
+        ).click()
 
-try:
-    WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
-    ).click()
+        time.sleep(2)
+        driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
+        driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
+        driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
+        time.sleep(5)
 
-    time.sleep(2)
-    driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
-    driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
-    driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
-    time.sleep(5)
-
-    cookies = driver.get_cookies()
-    driver.quit()
-    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
-return cookie_str
-    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
-    return cookie_str
-
-    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
-    return cookie_str
-except TimeoutException:
-    print("Login form not found — maybe already logged in.")
+    except TimeoutException:
+        print("Login form not found — maybe already logged in.")
 
     cookies = driver.get_cookies()
     driver.quit()
