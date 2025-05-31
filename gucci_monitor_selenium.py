@@ -33,9 +33,10 @@ def send_push(message):
 
 def login_and_get_cookies():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Disable headless for testing
+    # chrome_options.add_argument("--headless")  # Enable this later after testing
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--user-data-dir=/tmp/chrome")  # Fix for Render crash
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://employeestore.gucci.com/ae/en_gb/")
@@ -66,6 +67,7 @@ def login_and_get_cookies():
 
     cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
     return cookie_str
+
 def fetch_products(cookie_header):
     headers = {
         "Cookie": cookie_header,
