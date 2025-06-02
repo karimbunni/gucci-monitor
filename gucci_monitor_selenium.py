@@ -83,6 +83,9 @@ def main():
     cookie_header = login_and_get_cookies()
     send_push("✅ Gucci monitor with Selenium login started!")
 
+    # 🔔 Test notification to verify Pushover works
+    send_push("🔔 TEST: Pushover is working. This is a test notification.")
+
     while True:
         try:
             current_items = fetch_products(cookie_header)
