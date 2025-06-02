@@ -23,13 +23,16 @@ CHECK_INTERVAL = 120  # seconds
 previous_items = set()
 
 def send_push(message):
-    requests.post("https://api.pushover.net/1/messages.json", data={
-        "token": PUSHOVER_APP_TOKEN,
-        "user": PUSHOVER_USER_KEY,
-        "message": message,
-        "title": "👜 Gucci Monitor",
-        "priority": 1
-    })
+    try:
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": PUSHOVER_APP_TOKEN,
+            "user": PUSHOVER_USER_KEY,
+            "message": message,
+            "title": "👜 Gucci Monitor",
+            "priority": 1
+        })
+    except Exception as e:
+        print(f"❌ Failed to send push notification: {e}", flush=True)
 
 def login_and_get_cookies():
     chrome_options = Options()
@@ -82,9 +85,14 @@ def main():
     global previous_items
     cookie_header = login_and_get_cookies()
     send_push("✅ Gucci monitor with Selenium login started!")
+    print("✅ Startup message sent.", flush=True)
 
-    # 🔔 Test notification to verify Pushover works
-    send_push("🔔 TEST: Pushover is working. This is a test notification.")
+    # 🔔 Test notification with error handling
+    try:
+        send_push("🔔 TEST: Pushover is working. This is a test notification.")
+        print("🔔 Test push sent.", flush=True)
+    except Exception as e:
+        print(f"❌ Test push failed: {e}", flush=True)
 
     while True:
         try:
@@ -93,9 +101,14 @@ def main():
             if new_items:
                 for item in new_items:
                     send_push(f"🆕 New item found: https://employeestore.gucci.com{item}")
+                    print(f"🆕 New item: {item}", flush=True)
                 previous_items = current_items
+            else:
+                print("No new items found.", flush=True)
         except Exception as e:
-            send_push(f"⚠️ Error: {str(e)}")
+            error_msg = f"⚠️ Error: {str(e)}"
+            send_push(error_msg)
+            print(error_msg, flush=True)
         time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
