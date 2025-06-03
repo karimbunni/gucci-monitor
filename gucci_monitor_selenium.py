@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables from .env
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -25,8 +25,9 @@ def send_telegram(message):
         "text": message
     }
     try:
-        print("Sending message to Telegram…")  # Debug print
-        requests.post(url, data=payload)
+        print("Sending message to Telegram…")
+        res = requests.post(url, data=payload)
+        print("Telegram response:", res.status_code, res.text)
     except Exception as e:
         print("Failed to send Telegram message:", e)
 
@@ -50,7 +51,6 @@ def login_and_get_cookies():
             email_input.send_keys(GUCCI_EMAIL)
             password_input.send_keys(GUCCI_PASSWORD)
             password_input.send_keys(Keys.RETURN)
-
             time.sleep(5)
             print("Logged in to Gucci store.")
         else:
