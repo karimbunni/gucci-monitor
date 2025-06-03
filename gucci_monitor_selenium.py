@@ -104,3 +104,19 @@ def main():
             new_items = current_items - previous_items
             if new_items:
                 for item in new_items:
+                    send_push(f"🆕 New item found: https://employeestore.gucci.com{item}")
+                    print(f"🆕 New item: {item}", flush=True)
+                previous_items = current_items
+            else:
+                print("No new items found.", flush=True)
+
+        except Exception as e:
+            error_msg = f"⚠️ Error: {str(e)}"
+            send_push(error_msg)
+            print(error_msg, flush=True)
+
+        print("Sleeping for 2 minutes...\n", flush=True)
+        time.sleep(CHECK_INTERVAL)
+
+if __name__ == "__main__":
+    main()
