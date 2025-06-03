@@ -1,5 +1,4 @@
 import os
-import time
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -10,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-# Load credentials from environment variables
+# Load environment variables
 load_dotenv()
 EMAIL = os.getenv("GUCCI_EMAIL")
 PASSWORD = os.getenv("GUCCI_PASSWORD")
@@ -18,6 +17,7 @@ PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
 PUSHOVER_APP_TOKEN = os.getenv("PUSHOVER_APP_TOKEN")
 
 GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
+LOG_FILE = "last_items.txt"
 
 def send_push(message):
     requests.post("https://api.pushover.net/1/messages.json", data={
@@ -33,36 +33,28 @@ def login_and_get_cookies():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-
+    
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://employeestore.gucci.com/ae/en_gb/")
-    print("Opened Gucci store login page.", flush=True)
-    time.sleep(3)
+    print("Opened login page", flush=True)
 
     try:
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
         ).click()
-        print("Clicked login button.", flush=True)
-
-        time.sleep(2)
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "logonId"))
+        )
         driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
         driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
-        print("Entered login credentials.", flush=True)
-
         driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
-        print("Submitted login form.", flush=True)
-        time.sleep(5)
-
+        print("Submitted login form", flush=True)
     except TimeoutException:
-        print("Login form not found — maybe already logged in.", flush=True)
+        print("Login failed or already logged in", flush=True)
 
     cookies = driver.get_cookies()
-    print("Retrieved cookies.", flush=True)
     driver.quit()
-
-    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
-    return cookie_str
+    return "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
 
 def fetch_products(cookie_header):
     headers = {
@@ -71,38 +63,39 @@ def fetch_products(cookie_header):
     }
     response = requests.get(GUCCI_URL, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
-
     products = soup.select("a.teaser__anchor")
     return {p["href"] for p in products if "href" in p.attrs}
 
+def read_previous_items():
+    if not os.path.exists(LOG_FILE):
+        return set()
+    with open(LOG_FILE, "r") as file:
+        return set(line.strip() for line in file.readlines())
+
+def save_current_items(items):
+    with open(LOG_FILE, "w") as file:
+        for item in items:
+            file.write(item + "\n")
+
 def main():
-    print("✅ Scheduled Gucci monitor started", flush=True)
-    cookie_header = login_and_get_cookies()
-
     try:
+        cookie_header = login_and_get_cookies()
         current_items = fetch_products(cookie_header)
-        if not current_items:
-            print("No products found.", flush=True)
-            return
+        previous_items = read_previous_items()
+        new_items = current_items - previous_items
 
-        with open("last_seen_items.txt", "r") as file:
-            last_seen = set(line.strip() for line in file.readlines())
-
-        new_items = current_items - last_seen
         if new_items:
             for item in new_items:
                 send_push(f"🆕 New item: https://employeestore.gucci.com{item}")
-            with open("last_seen_items.txt", "w") as file:
-                file.writelines(f"{item}\n" for item in current_items)
         else:
-            print("No new items.", flush=True)
+            print("No new items found.", flush=True)
+
+        save_current_items(current_items)
+        print("Check complete", flush=True)
 
     except Exception as e:
-        send_push(f"⚠️ Error: {str(e)}")
-        print(f"Error occurred: {str(e)}", flush=True)
+        send_push(f"⚠️ Script error: {str(e)}")
+        print(f"Error occurred: {e}", flush=True)
 
 if __name__ == "__main__":
-    if not os.path.exists("last_seen_items.txt"):
-        with open("last_seen_items.txt", "w") as f:
-            f.write("")
     main()
