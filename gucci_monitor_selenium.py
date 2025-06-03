@@ -1,64 +1,74 @@
-import os
 import time
+import os
 import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException
 
-# Environment Variables
-GUCCI_EMAIL = os.environ.get("GUCCI_EMAIL")
-GUCCI_PASSWORD = os.environ.get("GUCCI_PASSWORD")
-PUSHOVER_USER_KEY = os.environ.get("PUSHOVER_USER_KEY")
-PUSHOVER_APP_TOKEN = os.environ.get("PUSHOVER_APP_TOKEN")
+# Environment variables
 GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
+COOKIE_HEADER = os.getenv("gucci_cookies", "")
+PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
+PUSHOVER_APP_TOKEN = os.getenv("PUSHOVER_APP_TOKEN")
+GUCCI_EMAIL = os.getenv("GUCCI_EMAIL")
+GUCCI_PASSWORD = os.getenv("GUCCI_PASSWORD")
 
-def send_notification(message):
+previous_items = set()
+
+def send_push_notification(msg):
     requests.post("https://api.pushover.net/1/messages.json", data={
         "token": PUSHOVER_APP_TOKEN,
         "user": PUSHOVER_USER_KEY,
-        "message": message,
+        "message": msg,
         "title": "Gucci Monitor",
         "priority": 1
     })
 
-def fetch_products():
+def fetch_products_with_selenium():
+    options = uc.ChromeOptions()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    driver = uc.Chrome(options=options)
+    driver.get("https://employeestore.gucci.com/ae/en_gb")
+
     try:
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        driver.get("https://employeestore.gucci.com/ae/en_gb/account/login")
+        email_input = driver.find_element(By.ID, "j_username")
+        password_input = driver.find_element(By.ID, "j_password")
+        email_input.send_keys(GUCCI_EMAIL)
+        password_input.send_keys(GUCCI_PASSWORD)
+        password_input.submit()
+        time.sleep(3)
+    except:
+        print("Login fields not found — possibly already logged in.")
 
-        try:
-            email_input = driver.find_element(By.ID, "email")
-            password_input = driver.find_element(By.ID, "pass")
-            login_button = driver.find_element(By.ID, "send2")
-            email_input.send_keys(GUCCI_EMAIL)
-            password_input.send_keys(GUCCI_PASSWORD)
-            login_button.click()
-            time.sleep(3)
-        except NoSuchElementException:
-            print("Login form not found (may already be logged in)")
+    driver.get(GUCCI_URL)
+    time.sleep(4)
 
-        send_notification("✅ Gucci Monitor Login Success - Running Check...")
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    product_elements = soup.find_all("div", class_="grid-tile")
 
-        driver.get(GUCCI_URL)
-        page_source = driver.page_source
-        driver.quit()
-        return page_source
+    new_items = []
+    for item in product_elements:
+        link = item.find("a", href=True)
+        if link:
+            href = link["href"]
+            if href not in previous_items:
+                previous_items.add(href)
+                new_items.append(href)
 
-    except Exception as e:
-        send_notification(f"❌ Error: {str(e)}")
-        print("Error:", e)
-        return None
+    driver.quit()
 
-def main():
+    return new_items
+
+def run_monitor():
     print("Running cron-based Gucci monitor...")
-    fetch_products()
+    new_items = fetch_products_with_selenium()
+    if new_items:
+        send_push_notification(f"New Gucci item(s) added:\n" + "\n".join(new_items))
+    else:
+        send_push_notification("No new items found.")
 
 if __name__ == "__main__":
-    main()
+    run_monitor()
