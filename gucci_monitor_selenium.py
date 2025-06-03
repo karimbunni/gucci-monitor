@@ -1,19 +1,19 @@
 import os
 import time
 import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
-TELEGRAM_BOT_TOKEN = "7696717269:AAG65MsL8MkRn8Lp1QipGozqbuLOmNvS-I8"
-TELEGRAM_USER_ID = "1707682850"
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_USER_ID = os.getenv("TELEGRAM_USER_ID")
 GUCCI_EMAIL = os.getenv("GUCCI_EMAIL")
 GUCCI_PASSWORD = os.getenv("GUCCI_PASSWORD")
 GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
@@ -25,6 +25,7 @@ def send_telegram(message):
         "text": message
     }
     try:
+        print("Sending message to Telegram…")  # Debug print
         requests.post(url, data=payload)
     except Exception as e:
         print("Failed to send Telegram message:", e)
@@ -32,48 +33,61 @@ def send_telegram(message):
 def login_and_get_cookies():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
 
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get("https://employeestore.gucci.com/ae/en_gb/")
-    time.sleep(3)
+    service = Service()
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
-        ).click()
-
-        time.sleep(2)
-        driver.find_element(By.NAME, "logonId").send_keys(GUCCI_EMAIL)
-        driver.find_element(By.NAME, "logonPassword").send_keys(GUCCI_PASSWORD)
-        driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
+        driver.get("https://employeestore.gucci.com/ae/en_gb/login")
         time.sleep(5)
 
-    except TimeoutException:
-        print("Login form not found — maybe already logged in.")
+        if "login" in driver.current_url:
+            email_input = driver.find_element(By.NAME, "j_username")
+            password_input = driver.find_element(By.NAME, "j_password")
 
-    cookies = driver.get_cookies()
-    driver.quit()
-    cookie_str = "; ".join([f"{c['name']}={c['value']}" for c in cookies])
-    return cookie_str
+            email_input.send_keys(GUCCI_EMAIL)
+            password_input.send_keys(GUCCI_PASSWORD)
+            password_input.send_keys(Keys.RETURN)
 
-def fetch_products(cookie_header):
+            time.sleep(5)
+            print("Logged in to Gucci store.")
+        else:
+            print("Already logged in or login not required.")
+
+        cookies = driver.get_cookies()
+        cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
+        return cookie_str
+
+    except Exception as e:
+        send_telegram(f"❌ Login failed: {str(e)}")
+        return None
+
+    finally:
+        driver.quit()
+
+def monitor_gucci():
+    send_telegram("✅ Gucci monitor started with Telegram notifications.")
+
+    cookies = login_and_get_cookies()
+    if not cookies:
+        print("Failed to retrieve cookies.")
+        return
+
     headers = {
-        "Cookie": cookie_header,
-        "User-Agent": "Mozilla/5.0"
+        "User-Agent": "Mozilla/5.0",
+        "Cookie": cookies,
     }
-    response = requests.get(GUCCI_URL, headers=headers)
-    soup = BeautifulSoup(response.text, "html.parser")
-    products = soup.select("a.teaser__anchor")
-    return {p["href"] for p in products if "href" in p.attrs}
 
-def main():
-    send_telegram("🚀 Gucci Monitor via Telegram started")
-    cookie_header = login_and_get_cookies()
-    products = fetch_products(cookie_header)
-    for p in products:
-        send_telegram(f"🆕 New item: https://employeestore.gucci.com{p}")
+    try:
+        response = requests.get(GUCCI_URL, headers=headers)
+        if "New In" in response.text:
+            send_telegram("🆕 Gucci website is updated with new products!")
+        else:
+            print("No new products detected.")
+    except Exception as e:
+        send_telegram(f"❌ Error checking Gucci site: {str(e)}")
 
 if __name__ == "__main__":
-    main()
+    monitor_gucci()
