@@ -83,11 +83,9 @@ def fetch_products(cookie_header):
 
 def main():
     global previous_items
-    cookie_header = login_and_get_cookies()
     send_push("✅ Gucci monitor with Selenium login started!")
     print("✅ Startup message sent.", flush=True)
 
-    # 🔔 Test notification with error handling
     try:
         send_push("🔔 TEST: Pushover is working. This is a test notification.")
         print("🔔 Test push sent.", flush=True)
@@ -96,6 +94,7 @@ def main():
 
     while True:
         try:
+            cookie_header = login_and_get_cookies()
             current_items = fetch_products(cookie_header)
             new_items = current_items - previous_items
             if new_items:
@@ -109,6 +108,8 @@ def main():
             error_msg = f"⚠️ Error: {str(e)}"
             send_push(error_msg)
             print(error_msg, flush=True)
+
+        print("Sleeping for 2 minutes...\n", flush=True)
         time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
