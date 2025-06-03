@@ -4,53 +4,101 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
-# CONFIG
-GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
-GUCCI_COOKIES = os.getenv("GUCCI_COOKIES")  # Entire cookie string as one line
+# Load credentials from environment variables
+EMAIL = os.getenv("GUCCI_EMAIL")
+PASSWORD = os.getenv("GUCCI_PASSWORD")
 PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
 PUSHOVER_APP_TOKEN = os.getenv("PUSHOVER_APP_TOKEN")
+
+GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
 CHECK_INTERVAL = 120  # seconds
 
-previous_products = set()
+previous_items = set()
 
-def get_headers():
-    return {
-        "Cookie": GUCCI_COOKIES,
-        "User-Agent": "Mozilla/5.0"
-    }
-
-def send_push_notification(title, message):
-    if PUSHOVER_USER_KEY and PUSHOVER_APP_TOKEN:
+def send_push(message):
+    print("🔔 Sending push notification:", message, flush=True)
+    try:
         requests.post("https://api.pushover.net/1/messages.json", data={
             "token": PUSHOVER_APP_TOKEN,
             "user": PUSHOVER_USER_KEY,
-            "title": title,
-            "message": message
+            "message": message,
+            "title": "👜 Gucci Monitor",
+            "priority": 1
         })
+    except Exception as e:
+        print("❌ Failed to send push:", str(e), flush=True)
 
-def fetch_product_links():
-    response = requests.get(GUCCI_URL, headers=get_headers())
+def login_and_get_cookies():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get("https://employeestore.gucci.com/ae/en_gb/")
+    print("🌐 Opened Gucci store login page.", flush=True)
+    time.sleep(3)
+
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
+        ).click()
+        print("👆 Clicked login button.", flush=True)
+
+        time.sleep(2)
+        driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
+        driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
+        print("🔐 Entered login credentials.", flush=True)
+
+        driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
+        print("✅ Submitted login form.", flush=True)
+        time.sleep(5)
+
+    except TimeoutException:
+        print("⚠️ Login form not found — maybe already logged in.", flush=True)
+
+    cookies = driver.get_cookies()
+    print("🍪 Retrieved cookies.", flush=True)
+    driver.quit()
+
+    cookie_str = "; ".join([f"{cookie['name']}={cookie['value']}" for cookie in cookies])
+    return cookie_str
+
+def fetch_products(cookie_header):
+    headers = {
+        "Cookie": cookie_header,
+        "User-Agent": "Mozilla/5.0"
+    }
+    response = requests.get(GUCCI_URL, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
-    links = soup.select("a[href*='/ae/en_gb/ca/']")  # basic filter
-    return set("https://employeestore.gucci.com" + a["href"] for a in links if a["href"].startswith("/ae/en_gb/ca/"))
+
+    products = soup.select("a.teaser__anchor")
+    return {p["href"] for p in products if "href" in p.attrs}
 
 def main():
-    global previous_products
+    global previous_items
+    cookie_header = login_and_get_cookies()
+    print("✅ Gucci monitor with Selenium login started!", flush=True)
+    send_push("✅ Gucci monitor with Selenium login started!")
+
     while True:
         try:
-            current_products = fetch_product_links()
-            new_items = current_products - previous_products
-
+            current_items = fetch_products(cookie_header)
+            new_items = current_items - previous_items
             if new_items:
-                for link in new_items:
-                    send_push_notification("👜 New Gucci Item!", link)
-                previous_products = current_products
-
+                for item in new_items:
+                    url = f"https://employeestore.gucci.com{item}"
+                    print("🆕 New item found:", url, flush=True)
+                    send_push(f"🆕 New item: {url}")
+                previous_items = current_items
         except Exception as e:
-            send_push_notification("❌ Gucci Monitor Error", str(e))
-
+            print("❌ Error during fetch:", str(e), flush=True)
+            send_push(f"⚠️ Error: {str(e)}")
         time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
