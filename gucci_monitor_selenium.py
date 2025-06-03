@@ -21,17 +21,14 @@ CHECK_INTERVAL = 120  # seconds
 previous_items = set()
 
 def send_push(message):
-    print("🔔 Sending push notification:", message, flush=True)
-    try:
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": PUSHOVER_APP_TOKEN,
-            "user": PUSHOVER_USER_KEY,
-            "message": message,
-            "title": "👜 Gucci Monitor",
-            "priority": 1
-        })
-    except Exception as e:
-        print("❌ Failed to send push:", str(e), flush=True)
+    print(f"📲 Sending push notification: {message}", flush=True)
+    requests.post("https://api.pushover.net/1/messages.json", data={
+        "token": PUSHOVER_APP_TOKEN,
+        "user": PUSHOVER_USER_KEY,
+        "message": message,
+        "title": "👜 Gucci Monitor",
+        "priority": 1
+    })
 
 def login_and_get_cookies():
     chrome_options = Options()
@@ -48,12 +45,12 @@ def login_and_get_cookies():
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "gl-cta--primary"))
         ).click()
-        print("👆 Clicked login button.", flush=True)
+        print("🔐 Clicked login button.", flush=True)
 
         time.sleep(2)
         driver.find_element(By.NAME, "logonId").send_keys(EMAIL)
         driver.find_element(By.NAME, "logonPassword").send_keys(PASSWORD)
-        print("🔐 Entered login credentials.", flush=True)
+        print("✏️ Entered login credentials.", flush=True)
 
         driver.find_element(By.CLASS_NAME, "loginForm__submit").click()
         print("✅ Submitted login form.", flush=True)
@@ -83,21 +80,23 @@ def fetch_products(cookie_header):
 def main():
     global previous_items
     cookie_header = login_and_get_cookies()
-    print("✅ Gucci monitor with Selenium login started!", flush=True)
     send_push("✅ Gucci monitor with Selenium login started!")
 
     while True:
         try:
+            print("🔄 Checking for new products...", flush=True)
             current_items = fetch_products(cookie_header)
             new_items = current_items - previous_items
             if new_items:
                 for item in new_items:
-                    url = f"https://employeestore.gucci.com{item}"
-                    print("🆕 New item found:", url, flush=True)
-                    send_push(f"🆕 New item: {url}")
+                    msg = f"🆕 New item: https://employeestore.gucci.com{item}"
+                    print(msg, flush=True)
+                    send_push(msg)
                 previous_items = current_items
+            else:
+                print("✅ No new items.", flush=True)
         except Exception as e:
-            print("❌ Error during fetch:", str(e), flush=True)
+            print(f"⚠️ Error occurred: {e}", flush=True)
             send_push(f"⚠️ Error: {str(e)}")
         time.sleep(CHECK_INTERVAL)
 
