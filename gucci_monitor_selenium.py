@@ -77,20 +77,24 @@ def fetch_products(cookie_header):
             "User-Agent": "Mozilla/5.0"
         }
         response = requests.get(GUCCI_URL, headers=headers)
+        print("Fetched page HTML.", flush=True)
+
         soup = BeautifulSoup(response.text, "html.parser")
-
         products = soup.select("a.teaser__anchor")
-        print(f"Found {len(products)} product links on the page.", flush=True)
+        print(f"Parsed HTML. Found {len(products)} product links.", flush=True)
 
-        if not products:
-            raise ValueError("No products found — page structure may have changed.")
+        hrefs = set()
+        for p in products:
+            if "href" in p.attrs:
+                hrefs.add(p["href"])
+        print(f"Extracted {len(hrefs)} hrefs from products.", flush=True)
 
-        return {p["href"] for p in products if "href" in p.attrs}
+        return hrefs
 
     except Exception as e:
-        print(f"⚠️ fetch_products() error: {e}", flush=True)
-        send_push(f"⚠️ Error in fetch_products: {e}")
-        return set()  # Return empty set to avoid crash
+        print(f"⚠️ fetch_products() failed: {e}", flush=True)
+        send_push(f"⚠️ fetch_products error: {e}")
+        return set()
 
 def main():
     global previous_items
@@ -109,7 +113,7 @@ def main():
             print("✅ Logged in and got cookies. Fetching products...", flush=True)
 
             current_items = fetch_products(cookie_header)
-            print(f"✅ Fetched {len(current_items)} items.", flush=True)
+            print(f"✅ Fetched {len(current_items)} items total.", flush=True)
 
             new_items = current_items - previous_items
             if new_items:
