@@ -79,6 +79,7 @@ def fetch_products(cookie_header):
     soup = BeautifulSoup(response.text, "html.parser")
 
     products = soup.select("a.teaser__anchor")
+    print(f"Found {len(products)} product links on the page.", flush=True)
     return {p["href"] for p in products if "href" in p.attrs}
 
 def main():
@@ -95,22 +96,11 @@ def main():
     while True:
         try:
             cookie_header = login_and_get_cookies()
+            print("✅ Logged in and got cookies. Fetching products...", flush=True)
+
             current_items = fetch_products(cookie_header)
+            print(f"✅ Fetched {len(current_items)} items.", flush=True)
+
             new_items = current_items - previous_items
             if new_items:
                 for item in new_items:
-                    send_push(f"🆕 New item found: https://employeestore.gucci.com{item}")
-                    print(f"🆕 New item: {item}", flush=True)
-                previous_items = current_items
-            else:
-                print("No new items found.", flush=True)
-        except Exception as e:
-            error_msg = f"⚠️ Error: {str(e)}"
-            send_push(error_msg)
-            print(error_msg, flush=True)
-
-        print("Sleeping for 2 minutes...\n", flush=True)
-        time.sleep(CHECK_INTERVAL)
-
-if __name__ == "__main__":
-    main()
