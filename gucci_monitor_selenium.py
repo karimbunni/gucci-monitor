@@ -1,1 +1,57 @@
-__token__=exp=1748972511~acl=%2f*~hmac=87b7bbf34d997cdbc3656e25889af057f919d3c32655b965e4214c25ed58d4bb; __troRUID=3e488f60-b058-4285-9990-1c4666344b6e; __trossion=1748555216_1800_1__3e488f60-b058-4285-9990-1c4666344b6e%3A1748555216_1748555229_2_; _abck=D6BA860F13A19F28E615D7EED07E5A78~-1~YAAQZfkUAskNLveWAQAA2ZRyNg3lRmRXOnsOGiOLTppkMwGaWs8bTYzIRCxTAwE5SzqJZqRQ7/zJsTU6OBn5kSkmXd7yqk89Gwu1Stn5TZjX1goRum3Bud3C3LlsQyQgqG4C3vsowaOfrLUbOnN5x0W5YyvKYzi8w/sR51OfA/z8A/GF48GUZcEAmrJOGt7l0zC6uUvGrVwo0yHZQhJ9torXoQGdv0ZWvW0GcJ8mXAMGB95IHBe45caS4lQ28nfdS9VR2ZA1rINWnV9KehdDytD+J50pPUsKI4ru6b3jeQepwBtlIX9vmUXD2FvkLU/m8islnW64l7qS/Ax2Gmc1FYyWTChas1hPXZv8WHvcAyaUx/2AU9oiOwFF5NRhdvhjIaDAPvs2hIxdRrlXVBiiA4XQnHPH/KMWYSa7zOjAGUxd3Ybkl7VYEG6FXG3+9TWbgT/aaV5r2CyXaQuB9eDlpho=~-1~-1~-1; _ga=GA1.1.1884246792.1748555109; _ga_KFZQDRZ3SY=_ga_KFZQDRZ3SY; acceleratorSecureGUID=310d91624b34b64c10c8fbed350bc49073d3c8f4; ak_bmsc=26DFE56FD20F3CB21160D3C030F8BB99~000000000000000000000000000000~YAAQZfkUAtpSLveWAQAAHXR2NhsEt3vs9k7GYlnQxYsMYNajScsdc1uAzytGrr7+oaFmkdNylUs/8avHfy/hDsHqPSs5EFLoVmWSEVUFYDEK6qggxq1mTTytyRCb10weBKaIxoSKpFo+PKVolvnDCT+/nU2krpAiDuvni88Ocris9F3bHUu3yf1IuHCxJV39r+HkXj00XvP2WQrkJ5JyZnRLhrNWb/Qhzg1FSPEolrhMYbAEp2iEkONGIkfLxBJqwJhOLTnpP2KmRzlxdRArTiNzVsLjEyZsl1Zj6SRaKa28s+znPjNkeUhgcxU1Q6Bq9cPc2aYSSmR/VhDnUNYzasfYl8+VH5+/yS8HqEtCQDDHzyYvg56h6VASHYTkyYRsKCOvyU1fWa0GGY+61qavx3H5wYUs9fgxkiGaYNuTSbJ9rzj/1AArO6Y/nXCVQOu6IiUS52JuUr6/GzryQB+65Bn2IYUmsO0RMEH9SdcfMEfxm0mOqFE0mK1iBq2e6EfDaZPGc0EMymXYhu4jS0Xr1BWd4Q==; AKA_A2=A; akaas_orchestrator=2147483647~rv=20~id=0a2f9994cdbf6daa160931bd05c3afc2; AWSALB=AOxNGRHPMvWkQuJZ+QrAB8TLowl+oelv9bNEaV2VpWJ52j/A25mkyeOnRyHnQxebEtcHdV9MtbI4cyc7fmuxONMZD/bwf4RmFxqDzuS6dE42JEO/WiSkujyIKmxX; AWSALBCORS=AOxNGRHPMvWkQuJZ+QrAB8TLowl+oelv9bNEaV2VpWJ52j/A25mkyeOnRyHnQxebEtcHdV9MtbI4cyc7fmuxONMZD/bwf4RmFxqDzuS6dE42JEO/WiSkujyIKmxX; bm_mi=5195E4958C84E592608C659AC6E5C23D~YAAQZfkUAmg2LveWAQAA5dd0Nhs2CnPoVNht9Q2puwqu7XrcmnVnM6HWCt52JwlIPFOy12rJ6SyLQwroQEiEkTJ0midDRQOlQUVSkf1GuyY+M/yvBKDbbr/zR954iqjIJNdNREhi4z/fY0ISFtk1ySoDDYiOSZOtWzg2yoAvKDpqNLeQ72nG0AHsLbaOfMcNifcskQx4nZMtJETX798cgkhJ19i+AmJbJdoMHRqcs3FkZgAmgZQVCNazlNYI+9zY1WAJKKEKLivtNXEIb1kaof7hyeKdBQSBS/C3vxXob/cz26FjwZeDGICjButS18C+EGuU/6A=~1; bm_sv=C454B79AB344D27DBAC4DE7A0794070E~YAAQZfkUAqO0LveWAQAAWzd8NhvFUBVlRel5g7OaH3yUb2sp6nHnur1szw6Tg145H23yhTIsy7qafy9ziiC8vk7Hqs14FM73RopsR12dfNeFdhHmLqO9MN+f7bTNgSBXiUNscvaqEfmBoyiNwAXUUVt8rt+ptfo/fXRkJ9pkIvblPzdxSIDn9U69E1Pbnw84hLlhU4dmsjhHgiNsDlFClt63+y7778QkZD77IU9CSOiu8y+3zrE2sP0sNyr+WHav~1; bm_sz=E08CBCB53E066760B55C19A23C5621B1~YAAQZfkUAhC0LveWAQAAbSx8NhtbXYYAyVjL2wUnyLDvO7Z+vS8ek2mYU7EwEp5dFBARvET/4dUIElWhRBzJu3JoOY3Iogm87QOEeH+U4g6MNwz0MC654cpHPwgecqOqIQl0ufT8Lbd08jx9CLvso6enrELByUPCWlyW+E+c2bhp3WMd21iOtZnRxGhpBcLk5Y7aLpSBYm4wP1wRgCBifFDKiWgZHBx53owORnTOUovUXh19G8g9SApuMkbGAY6OoHYWZuLZjMXoQK2MqfMZS83YxoIip89ayQqHAdqJFoffHpSu2s3J8eM/+xZ+mpZSZGy7G8GS8dQbgM5BFOK+7zqHOtNv8VR/OBM6V4V8/obfwtgtYnjaO+lXN5T9dfbl/hyYdsx+mp+Iu7hYZRBYWw5++UoZ/+UHe3APBqYt2Mc+zpY/o4Sw/0BMP5DD6OSmZ3nVT0MtrjAhsa3BBNbIYOmvHFjFmPU5sQ==~4470578~3687478; enabled_flags=%7B%22poc-1%22%3Afalse%2C%22poc-2%22%3Afalse%7D; feature-flags-session-id=0.bf18dd58.1748555096.cdf6508; gucci-privatesale-ae-cart=d81a73fd-e812-4cad-93d0-47fb32222e54; JSESSIONID=21364CF6214554517152A6F1B595B6F4-n2; OptanonAlertBoxClosed=2025-05-29T21:45:09.806Z; OptanonConsent=isGpcEnabled=0&datestamp=Tue+Jun+03+2025+19%3A49%3A58+GMT%2B0400+(Gulf+Standard+Time)&version=202503.1.0&browserGpcFlag=0&isIABGlobal=false&consentId=62a80c9d-ae25-4764-b49d-5a83c98469cb&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0004%3A1&hosts=&genVendors=V2%3A0%2C&intType=1&geolocation=AE%3BDU&AwaitingReconsent=false; site_abbreviation=ae; voxSessionRefresh=dd7b5dc4-a52b-415e-aace-2b1afc277972
+import os
+import time
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+
+# CONFIG
+GUCCI_URL = "https://employeestore.gucci.com/ae/en_gb/ca/new-in-c-new-in"
+GUCCI_COOKIES = os.getenv("GUCCI_COOKIES")  # Entire cookie string as one line
+PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
+PUSHOVER_APP_TOKEN = os.getenv("PUSHOVER_APP_TOKEN")
+CHECK_INTERVAL = 120  # seconds
+
+previous_products = set()
+
+def get_headers():
+    return {
+        "Cookie": GUCCI_COOKIES,
+        "User-Agent": "Mozilla/5.0"
+    }
+
+def send_push_notification(title, message):
+    if PUSHOVER_USER_KEY and PUSHOVER_APP_TOKEN:
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": PUSHOVER_APP_TOKEN,
+            "user": PUSHOVER_USER_KEY,
+            "title": title,
+            "message": message
+        })
+
+def fetch_product_links():
+    response = requests.get(GUCCI_URL, headers=get_headers())
+    soup = BeautifulSoup(response.text, "html.parser")
+    links = soup.select("a[href*='/ae/en_gb/ca/']")  # basic filter
+    return set("https://employeestore.gucci.com" + a["href"] for a in links if a["href"].startswith("/ae/en_gb/ca/"))
+
+def main():
+    global previous_products
+    while True:
+        try:
+            current_products = fetch_product_links()
+            new_items = current_products - previous_products
+
+            if new_items:
+                for link in new_items:
+                    send_push_notification("👜 New Gucci Item!", link)
+                previous_products = current_products
+
+        except Exception as e:
+            send_push_notification("❌ Gucci Monitor Error", str(e))
+
+        time.sleep(CHECK_INTERVAL)
+
+if __name__ == "__main__":
+    main()
