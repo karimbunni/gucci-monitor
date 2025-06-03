@@ -36,7 +36,7 @@ def send_push(message):
 
 def login_and_get_cookies():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Required for Render
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
@@ -71,16 +71,26 @@ def login_and_get_cookies():
     return cookie_str
 
 def fetch_products(cookie_header):
-    headers = {
-        "Cookie": cookie_header,
-        "User-Agent": "Mozilla/5.0"
-    }
-    response = requests.get(GUCCI_URL, headers=headers)
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        headers = {
+            "Cookie": cookie_header,
+            "User-Agent": "Mozilla/5.0"
+        }
+        response = requests.get(GUCCI_URL, headers=headers)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-    products = soup.select("a.teaser__anchor")
-    print(f"Found {len(products)} product links on the page.", flush=True)
-    return {p["href"] for p in products if "href" in p.attrs}
+        products = soup.select("a.teaser__anchor")
+        print(f"Found {len(products)} product links on the page.", flush=True)
+
+        if not products:
+            raise ValueError("No products found — page structure may have changed.")
+
+        return {p["href"] for p in products if "href" in p.attrs}
+
+    except Exception as e:
+        print(f"⚠️ fetch_products() error: {e}", flush=True)
+        send_push(f"⚠️ Error in fetch_products: {e}")
+        return set()  # Return empty set to avoid crash
 
 def main():
     global previous_items
@@ -111,7 +121,7 @@ def main():
                 print("No new items found.", flush=True)
 
         except Exception as e:
-            error_msg = f"⚠️ Error: {str(e)}"
+            error_msg = f"⚠️ Main loop error: {str(e)}"
             send_push(error_msg)
             print(error_msg, flush=True)
 
